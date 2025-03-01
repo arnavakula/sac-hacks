@@ -8,9 +8,32 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
+  id       String  @id @default(uuid())
   name     String
-  email    String @unique
+  email    String  @unique
   password String
-  role     String @default("student")
+  role     String  // "student" or "professor"
+
+  // One-to-Many: A professor can create multiple classes
+  createdClasses Class[] @relation("ProfessorClasses")
+
+  // Many-to-Many: A student can be in multiple classes (NO references needed)
+  classes Class[] @relation("StudentClasses")
+}
+
+model Class {
+  id          String  @id @default(uuid())
+  code        String  @unique
+  name        String
+  description String?
+  quarter     String
+  year        Int
+  createdAt   DateTime @default(now())
+
+  // One-to-Many: Each class is linked to a professor
+  professor   User    @relation("ProfessorClasses", fields: [professorId], references: [id])
+  professorId String
+
+  // Many-to-Many: Students enrolled in this class (NO references needed)
+  students User[] @relation("StudentClasses")
 }
