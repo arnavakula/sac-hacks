@@ -61,9 +61,9 @@ export default function ProfessorDashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              {/* <div className="text-2xl font-bold">
-                {classes.reduce((total, cls) => total + cls._count.students, 0)}
-              </div> */}
+              <div className="text-2xl font-bold">
+                {/* {classes.reduce((total, cls) => total + cls._count.students, 0)} */}FIX
+              </div>
               <p className="text-xs text-muted-foreground">Enrolled across all classes</p>
             </CardContent>
           </Card>
@@ -95,7 +95,7 @@ export default function ProfessorDashboard() {
                       <td className="p-4 align-middle">{cls.name}</td>
                       <td className="p-4 align-middle">{cls.quarter}</td>
                       <td className="p-4 align-middle">{cls.year}</td>
-                      {/* <td className="p-4 align-middle">{cls._count.students}</td> */}
+                      <td className="p-4 align-middle">{/*{cls._count.students}*/}FIX</td>
                       <td className="p-4 align-middle">
                         <Link href={`/dashboard/professor/classes/${cls.id}`}>
                           <Button size="sm">View</Button>
