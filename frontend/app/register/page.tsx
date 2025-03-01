@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react"; // Import signIn function
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,37 +10,34 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultRole = searchParams.get("role") || "student";
+  const { toast } = useToast();
+
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
-  const handleLogin = async (role: string) => {
+  const handleRegister = async (role: string) => {
     setIsLoading(true);
 
-    const result = await signIn("credentials", {
-      redirect: false, // Prevent automatic redirection
-      email,
-      password,
+    const response = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password, role }),
     });
 
+    const data = await response.json();
     setIsLoading(false);
 
-    if (result?.error) {
-      toast({ title: "Login failed", description: result.error, variant: "destructive" });
+    if (!response.ok) {
+      toast({ title: "Registration failed", description: data.message, variant: "destructive" });
     } else {
-      toast({ title: "Login successful", description: `Logged in as ${role}` });
-
-      // Redirect user based on role
-      if (role === "student") {
-        router.push("/dashboard/student");
-      } else {
-        router.push("/dashboard/professor");
-      }
+      toast({ title: "Registration successful", description: "You can now log in." });
+      router.push("/login");
     }
   };
 
@@ -56,8 +52,8 @@ export default function LoginPage() {
 
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-          <p className="text-sm text-muted-foreground">Enter your credentials to access your account</p>
+          <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
+          <p className="text-sm text-muted-foreground">Sign up as a student or professor</p>
         </div>
 
         <Tabs defaultValue={defaultRole} className="w-full">
@@ -66,14 +62,24 @@ export default function LoginPage() {
             <TabsTrigger value="professor">Professor</TabsTrigger>
           </TabsList>
 
-          {/* Student Login */}
+          {/* Student Registration */}
           <TabsContent value="student">
             <Card>
               <CardHeader>
-                <CardTitle>Student Login</CardTitle>
-                <CardDescription>Access your assignments and feedback</CardDescription>
+                <CardTitle>Student Registration</CardTitle>
+                <CardDescription>Sign up to access your assignments</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="student-name">Name</Label>
+                  <Input
+                    id="student-name"
+                    type="text"
+                    placeholder="John Doe"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="student-email">Email</Label>
                   <Input
@@ -95,21 +101,31 @@ export default function LoginPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => handleLogin("student")} disabled={isLoading}>
-                  {isLoading ? "Logging in..." : "Login"}
+                <Button className="w-full" onClick={() => handleRegister("student")} disabled={isLoading}>
+                  {isLoading ? "Registering..." : "Register"}
                 </Button>
               </CardFooter>
             </Card>
           </TabsContent>
 
-          {/* Professor Login */}
+          {/* Professor Registration */}
           <TabsContent value="professor">
             <Card>
               <CardHeader>
-                <CardTitle>Professor Login</CardTitle>
-                <CardDescription>Manage assignments and grading</CardDescription>
+                <CardTitle>Professor Registration</CardTitle>
+                <CardDescription>Sign up to manage assignments</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="professor-name">Name</Label>
+                  <Input
+                    id="professor-name"
+                    type="text"
+                    placeholder="Dr. Jane Doe"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="professor-email">Email</Label>
                   <Input
@@ -131,8 +147,8 @@ export default function LoginPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => handleLogin("professor")} disabled={isLoading}>
-                  {isLoading ? "Logging in..." : "Login"}
+                <Button className="w-full" onClick={() => handleRegister("professor")} disabled={isLoading}>
+                  {isLoading ? "Registering..." : "Register"}
                 </Button>
               </CardFooter>
             </Card>
@@ -140,9 +156,9 @@ export default function LoginPage() {
         </Tabs>
 
         <p className="px-8 text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="underline underline-offset-4 hover:text-primary">
-            Register
+          Already have an account?{" "}
+          <Link href="/login" className="underline underline-offset-4 hover:text-primary">
+            Log in
           </Link>
         </p>
       </div>
