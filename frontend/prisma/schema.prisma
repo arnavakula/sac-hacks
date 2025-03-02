@@ -14,11 +14,8 @@ model User {
   password String
   role     String  // "student" or "professor"
 
-  // One-to-Many: A professor can create multiple classes
-  createdClasses Class[] @relation("ProfessorClasses")
-
-  // Many-to-Many: A student can be in multiple classes (NO references needed)
-  classes Class[] @relation("StudentClasses")
+  createdClasses Class[] @relation("ProfessorClasses") // ✅ Professors can create classes
+  classEnrollments UsersOnClasses[] // ✅ Many-to-Many via Join Table
 }
 
 model Class {
@@ -30,10 +27,30 @@ model Class {
   year        Int
   createdAt   DateTime @default(now())
 
-  // One-to-Many: Each class is linked to a professor
   professor   User    @relation("ProfessorClasses", fields: [professorId], references: [id])
   professorId String
 
-  // Many-to-Many: Students enrolled in this class (NO references needed)
-  students User[] @relation("StudentClasses")
+  users        UsersOnClasses[] // ✅ Many-to-Many via Join Table
+  assignments  Assignment[] // ✅ One-to-Many: Class → Assignments
+}
+
+model UsersOnClasses {
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  class   Class  @relation(fields: [classId], references: [id])
+  classId String
+  assignedAt DateTime @default(now())
+
+  @@id([userId, classId]) // ✅ Composite Primary Key
+}
+
+model Assignment {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  dueDate     DateTime
+  createdAt   DateTime @default(now())
+
+  class       Class   @relation(fields: [classId], references: [id])
+  classId     String
 }

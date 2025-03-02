@@ -12,8 +12,18 @@ export async function GET(req: Request, { params }: { params: { classId: string 
   }
 
   try {
-    const classData = await prisma.class.findUnique({
-      where: { id: params.classId, professorId: session.user.id }
+    const classData = await prisma.class.findFirst({
+      where: {
+        id: params.classId,
+        professorId: session.user.id,
+      },
+      include: {
+        users: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
 
     if (!classData) {
@@ -23,6 +33,6 @@ export async function GET(req: Request, { params }: { params: { classId: string 
     return new Response(JSON.stringify(classData), { status: 200 });
   } catch (error) {
     console.error("Error fetching class details:", error);
-    return new Response(JSON.stringify({ message: "Error retrieving class details." }), { status: 500 });
+    return new Response(JSON.stringify({ message: "Error retrieving class details.", error: error.message }), { status: 500 });
   }
 }

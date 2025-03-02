@@ -12,7 +12,16 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { code, name, quarter, year, description, professorId } = await req.json();
+    const { code, name, quarter, year, description } = await req.json();
+    const professorId = session.user.id; 
+
+    const existingClass = await prisma.class.findUnique({
+      where: { code }
+    });
+
+    if (existingClass) {
+      return new Response(JSON.stringify({ message: "Class code already exists." }), { status: 400 });
+    }
 
     const newClass = await prisma.class.create({
       data: {
@@ -21,13 +30,17 @@ export async function POST(req: Request) {
         quarter,
         year,
         description,
-        professorId,
+        professor: { connect: { id: professorId } }, 
+        users: {
+          create: { user: { connect: { id: professorId } } } 
+        }
       },
+      include: { users: true } 
     });
 
     return new Response(JSON.stringify(newClass), { status: 201 });
   } catch (error) {
     console.error("Error creating class:", error);
-    return new Response(JSON.stringify({ message: "Error creating class.", error }), { status: 500 });
+    return new Response(JSON.stringify({ message: "Error creating class.", error: error.message }), { status: 500 });
   }
 }

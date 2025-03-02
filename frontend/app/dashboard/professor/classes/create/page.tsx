@@ -33,14 +33,13 @@ export default function CreateClassPage() {
       toast({ title: "Error", description: "Please fill in all required fields.", variant: "destructive" });
       return;
     }
-
+  
     setIsLoading(true);
     try {
       const response = await fetch("/api/classes/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          professorId: session?.user?.id,
           code: classCode,
           name: className,
           quarter,
@@ -48,23 +47,21 @@ export default function CreateClassPage() {
           description,
         }),
       });
-
+  
       const data = await response.json();
       setIsLoading(false);
-
-      console.log(data);
-
+  
       if (!response.ok) {
         throw new Error(data.message || "Failed to create class.");
       }
-
+  
       toast({ title: "Class Created", description: "The class has been successfully created." });
       router.push("/dashboard/professor");
     } catch (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
       setIsLoading(false);
     }
-  };
+  };  
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">

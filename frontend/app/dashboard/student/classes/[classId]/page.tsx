@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 
-export default function ClassDetailsPage() {
+export default function StudentClassDetailsPage() {
   const { classId } = useParams(); // Get class ID from URL
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -17,20 +17,18 @@ export default function ClassDetailsPage() {
   const [classData, setClassData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  console.log(classData);
-
   useEffect(() => {
     if (status !== "authenticated") return;
 
     async function fetchClassDetails() {
       try {
-        const response = await fetch(`/api/classes/${classId}`);
-        if (!response.ok) throw new Error("Class not found.");
+        const response = await fetch(`/api/classes/student/${classId}`);
+        if (!response.ok) throw new Error("You are not enrolled in this class.");
         const data = await response.json();
         setClassData(data);
       } catch (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
-        router.push("/dashboard/professor");
+        router.push("/dashboard/student");
       } finally {
         setIsLoading(false);
       }
@@ -39,9 +37,8 @@ export default function ClassDetailsPage() {
     fetchClassDetails();
   }, [status, classId]);
 
-  if (isLoading) return <p>Loading class details...</p>;
-  if (!classData) return <p>Class not found.</p>;
-
+  if (isLoading) return <p className="text-center text-lg">Loading class details...</p>;
+  if (!classData) return <p className="text-center text-lg text-red-500">Class not found.</p>;
 
   return (
     <div className="flex flex-col items-center justify-center p-6">
@@ -53,14 +50,30 @@ export default function ClassDetailsPage() {
           <p><strong>Quarter:</strong> {classData.quarter}</p>
           <p><strong>Year:</strong> {classData.year}</p>
           <p><strong>Description:</strong> {classData.description || "No description available."}</p>
-          <p><strong>Enrolled Students:</strong> {classData.users.length - 1}</p>
-          
-          <div className="flex gap-2">
-            <Link href="/dashboard/professor">
+          <p><strong>Professor:</strong> {classData.professor.name} ({classData.professor.email})</p>
+
+          {/* ✅ Display Assignments */}
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold">Assignments</h3>
+            {classData.assignments.length > 0 ? (
+              <ul className="list-disc pl-5">
+                {classData.assignments.map((assignment) => (
+                  <li key={assignment.id} className="text-sm flex justify-between items-center">
+                    <span>{assignment.title} - Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
+                    <Link href={`/dashboard/student/assignments/${assignment.id}`}>
+                      <Button size="sm" variant="outline">View</Button>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-gray-500">No assignments available.</p>
+            )}
+          </div>
+
+          <div className="flex gap-2 mt-4">
+            <Link href="/dashboard/student">
               <Button variant="outline">Back to Dashboard</Button>
-            </Link>
-            <Link href={`/dashboard/professor/classes/${classId}/manage`}>
-              <Button>Manage Class</Button>
             </Link>
           </div>
         </CardContent>
@@ -68,4 +81,3 @@ export default function ClassDetailsPage() {
     </div>
   );
 }
-

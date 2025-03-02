@@ -16,7 +16,14 @@ export async function GET(req: Request) {
   try {
     // Fetch classes created by this professor
     const professorClasses = await prisma.class.findMany({
-      where: { professorId: session.user.id }
+      where: { professorId: session.user.id },
+      include: {
+        users: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
 
     return new Response(JSON.stringify(professorClasses), { status: 200 });
