@@ -14,8 +14,9 @@ model User {
   password String
   role     String  // "student" or "professor"
 
-  createdClasses Class[] @relation("ProfessorClasses") // ✅ Professors can create classes
-  classEnrollments UsersOnClasses[] // ✅ Many-to-Many via Join Table
+  createdClasses Class[] @relation("ProfessorClasses")
+  classEnrollments UsersOnClasses[]
+  submissions Submission[]
 }
 
 model Class {
@@ -30,8 +31,8 @@ model Class {
   professor   User    @relation("ProfessorClasses", fields: [professorId], references: [id])
   professorId String
 
-  users        UsersOnClasses[] // ✅ Many-to-Many via Join Table
-  assignments  Assignment[] // ✅ One-to-Many: Class → Assignments
+  users        UsersOnClasses[] 
+  assignments  Assignment[]
 }
 
 model UsersOnClasses {
@@ -41,7 +42,7 @@ model UsersOnClasses {
   classId String
   assignedAt DateTime @default(now())
 
-  @@id([userId, classId]) // ✅ Composite Primary Key
+  @@id([userId, classId])
 }
 
 model Assignment {
@@ -53,4 +54,19 @@ model Assignment {
 
   class       Class   @relation(fields: [classId], references: [id])
   classId     String
+  submissions Submission[]
+}
+
+model Submission {
+  id           String       @id @default(uuid())
+  fileUrl      String
+  submittedAt  DateTime     @default(now())
+  grade        Int?
+  feedback     String?
+
+  student      User         @relation(fields: [studentId], references: [id])
+  studentId    String
+
+  assignment   Assignment   @relation(fields: [assignmentId], references: [id])
+  assignmentId String
 }
