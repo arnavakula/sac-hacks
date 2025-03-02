@@ -1,0 +1,17 @@
+openai
+duckduckgo_search
+lancedb
+PyPDF2
+requests
+beautifulsoup4
+agno
+pypdf
+tantivy
+pandas
+langchain_community
+streamlit
+langchain_huggingface
+faiss-cpu
+tiktoken
+fitz
+frontend

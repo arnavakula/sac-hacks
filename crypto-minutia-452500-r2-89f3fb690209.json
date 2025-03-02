@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "crypto-minutia-452500-r2",
+  "private_key_id": "89f3fb6902092a1b8e1c5c3650f925919a68a62a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCQGYGZiJVUIUVA\nRClFXYQW2My8P9F3i4j4z/Gv3joYCtuCZ5Tft/BE06LKCs9n6bWlP7aqVE38BwOd\noq3gOaMrCGPrS43XV1yfeydu/ICMseWtG0L//hic4i6NDU2xxvX6h03j1bXKZlt2\nxRJgBQsNzB8+Zc+swh28PkP2bPzTGLUOViVNRhrqFd8C+877GuPZ4lMDhUrzAJ7f\nO+zTJUQvO2/oWSoUHSd+1lLm6CK28poCNYyKDyfHpiMT5dEbhT+foMXwlctTREIS\ncJzefiaFKDtUWCwryT2SJQaC5/IOLzxnZFmXe5La0j+xyltUtDPpBd48FyR9FR3u\nljHYHba3AgMBAAECggEAHvmUnbO54bk7IRrlwjbdZ2nX7JlNRgS0/0L3wWWkGDnx\nQIFSg5qO58SUaBjVx5D5zlk5QzjXAJdjZBWtiZbqJ5xomhIGHeV2EAQRkG5vlY7B\n/6luCAgPM139Qq265z2M73r5N8HfD3BcNdYb4o8C9sbLaobJEuoxKR87TbPUzu1c\nm5oZUc6m+7jXP225j7cSyqkWVPjgc/pVjJi1Z0srxoMucFoXFRDwUJJg5eadKo2E\nzwjtoP29Dd1AQdJEjDXtjvNuHKvHBpyp73oUxb2qI97eeYaihdrlIvWJS4TpHdiy\nlJTdFRTAnuDt8nQimY0cRdoN0i2n7BjB24GPcoen4QKBgQDDxd91dthq1nlZJKIM\nBJyeHWeClZwlQLG5q1NkoqkJKFkBG3CUCK025bFPkWWxIC841gN4wLmxMzQnEphB\n/iA/Ct25CBjq7zHtSCVAWL+QFbKPNv0drG6ivo5F3K+1swfikgmYcIlSkT+1sbQK\nk0IxDIKhwabKX7FxmEKYoEPiYQKBgQC8bhgoJeCoWxFFN14Kkj6D7ReodWl68dUv\n2ux8A5bzkhofSaHqdeOnMRG5TgNo/+K6ohLvtQdlFlox4lilfDCgEjH/0DPnGTLu\nYOnx9IXiNmrKPvjfJnBrrCb2RjZoMRIG+PRqRatW+2UcpH0v3FYXxzfRmDkyn0V9\nd2tlUSBgFwKBgQCp7jmWxj/4DI5sWCXodKBVhoRwjthoZY1e8l2CfsZm0oTfNygy\n9o0Tl7CetkAkzSDwHqQIzpDgROfB+pv6vFDVJ+NpVqP6WQFnSzY6ck5lDNBfC4YN\nmby2utzXu0UxXGM9wTFfBl/MMZOxbLwwab4MwSUqruLNyt5FEbrMrGAAQQKBgF/E\nJIrjFVb7Ub+38Be3VAaAzXFUmxNdLVhxD5fHy0RnkNct+RjMabNjgPqI57rJslXg\nYXdqriN2RMjtnNgeUihIlxjInFhrujLlFoFeIV1jAstfTeU8CA7xI6wu6x/xMJRS\nmwYX+ojuo+j2wJk+hpL3MStZDljoEc0+kFqh7K5pAoGAXKqe7ikq5yWxWcLMym/B\neF8g9yZXFRy4pBu+Ps4UjFggqiYW8iGWIeHBhd23z/FWe9ONjElbG8+qmxOW49t/\nEdOa2/4RMjMhBS9Es2StPkk6hMyzBfTkjNJsML1EbfkNi5Wf58+fxTiAEpmOfsy0\nhBeSsD+smv5AXoEGhmS4qsc=\n-----END PRIVATE KEY-----\n",
+  "client_email": "hackathon@crypto-minutia-452500-r2.iam.gserviceaccount.com",
+  "client_id": "115135685660047901584",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/hackathon%40crypto-minutia-452500-r2.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
