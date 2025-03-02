@@ -15,11 +15,14 @@ export async function GET(req: Request, { params }: { params: { assignmentId: st
     const assignment = await prisma.assignment.findUnique({
       where: { id: params.assignmentId },
       include: {
-        submissions: session.user.role === "student"
-          ? { where: { studentId: session.user.id } } // Student: Get only their submission
-          : { include: { student: true } }, // Professor: Get all submissions with student info
+        submissions: {
+          where: { studentId: session.user.id },
+          orderBy: { submittedAt: "desc" }, // Get the latest submission
+          take: 1, // Only return one submission
+        },
       },
     });
+    
 
     if (!assignment) {
       return new Response(JSON.stringify({ message: "Assignment not found." }), { status: 404 });
