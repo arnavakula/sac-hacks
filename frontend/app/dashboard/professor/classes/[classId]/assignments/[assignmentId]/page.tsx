@@ -39,25 +39,62 @@ export default function AssignmentDetailsPage() {
     fetchAssignment();
   }, [status, assignmentId]);
 
-  const handleGradeSubmission = async (submissionId: string) => {
-    setGradingSubmission(submissionId);
-
+  const handleGradeSubmission = async (submission) => {
+    setGradingSubmission(submission.id);
+  
     try {
-      const response = await fetch("/api/process", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ submissionId }),
-      });
+      let studentStructuredTextUrl = submission.structuredText;
+      let answerKeyStructuredTextUrl = assignment.answerKey?.structuredText;
 
-      if (!response.ok) throw new Error("Failed to process submission.");
+  
+      // Generate structured text for student submission if missing
+      if (!studentStructuredTextUrl) {
+        const studentResponse = await fetch("/api/process", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pdfUrl: submission.fileUrl,
+            professorId: session.user.id,
+            filename: `submissions/${submission.student.id}-${assignmentId}-structured.txt`,
+            type: "submission",
+            id: submission.id,
+          }),
+        });
+  
+        if (!studentResponse.ok) throw new Error("Failed to process student submission.");
+        const studentData = await studentResponse.json();
+        studentStructuredTextUrl = studentData.fileUrl;
+      }
 
+      console.log(assignment);
+  
+      // Generate structured text for answer key if missing
+      if (!answerKeyStructuredTextUrl && assignment.answerKey?.fileUrl) {
+        const answerKeyResponse = await fetch("/api/process", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pdfUrl: assignment.answerKey.fileUrl,
+            professorId: session.user.id,
+            filename: `answer-keys/${assignmentId}-structured.txt`,
+            type: "answerKey",
+            id: assignment.answerKey.id,
+          }),
+        });
+  
+        if (!answerKeyResponse.ok) throw new Error("Failed to process answer key.");
+        const answerKeyData = await answerKeyResponse.json();
+        console.log(answerKeyData);
+        answerKeyStructuredTextUrl = answerKeyData.fileUrl;
+      }
+  
       toast({ title: "Success", description: "Submission is being processed for grading." });
-
-      // Optionally refresh assignment data after grading
+  
+      // Refresh assignment state
       setAssignment((prev) => ({
         ...prev,
         submissions: prev.submissions.map((sub) =>
-          sub.id === submissionId ? { ...sub, processing: true } : sub
+          sub.id === submission.id ? { ...sub, structuredText: studentStructuredTextUrl } : sub
         ),
       }));
     } catch (error) {
@@ -66,6 +103,7 @@ export default function AssignmentDetailsPage() {
       setGradingSubmission(null);
     }
   };
+  
 
   if (isLoading) return <p className="text-center text-lg">Loading assignment details...</p>;
   if (!assignment) return <p className="text-center text-lg text-red-500">Assignment not found.</p>;
@@ -130,7 +168,7 @@ export default function AssignmentDetailsPage() {
                       <Button
                         size="sm"
                         className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white"
-                        onClick={() => handleGradeSubmission(submission.id)}
+                        onClick={() => handleGradeSubmission(submission)}
                         disabled={gradingSubmission === submission.id}
                       >
                         {gradingSubmission === submission.id ? "Processing..." : "Grade"}

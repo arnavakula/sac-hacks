@@ -27,7 +27,7 @@ export async function GET(req: Request, { params }: { params: { assignmentId: st
         },
       });
     } else if (session.user.role === "professor") {
-      // Professor: Fetch the assignment and all submissions
+      // Professor: Fetch the assignment, all submissions, and the answer key
       assignment = await prisma.assignment.findUnique({
         where: { id: params.assignmentId },
         include: {
@@ -35,6 +35,7 @@ export async function GET(req: Request, { params }: { params: { assignmentId: st
             include: { student: true }, // Include student details in submissions
             orderBy: { submittedAt: "desc" }, // Order submissions by latest first
           },
+          answerKey: true, // ✅ Include the answer key for professors
         },
       });
     }

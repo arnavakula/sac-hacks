@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+
+// Initialize Prisma
+const prisma = new PrismaClient();
 
 // AWS S3 Configuration
 const s3 = new S3Client({
@@ -12,15 +16,18 @@ const s3 = new S3Client({
 
 export async function POST(req: NextRequest) {
   try {
-    const { pdfUrl, professorId } = await req.json();
+    const { pdfUrl, professorId, filename, type, id } = await req.json(); // Expect `type` and `id` (submissionId or answerKeyId)
 
-    if (!pdfUrl || !professorId) {
-      return NextResponse.json({ error: "Missing 'pdfUrl' or 'professorId' in request body." }, { status: 400 });
+    if (!pdfUrl || !professorId || !filename || !type || !id) {
+      return NextResponse.json(
+        { error: "Missing 'pdfUrl', 'professorId', 'filename', 'type', or 'id' in request body." },
+        { status: 400 }
+      );
     }
 
     const flaskApiUrl = "http://localhost:5008/process";
 
-    // Send request to Flask API
+    // Send request to Flask API for structured text processing
     const response = await fetch(flaskApiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -38,13 +45,13 @@ export async function POST(req: NextRequest) {
       throw new Error("No structured text returned.");
     }
 
-    // Convert to Buffer for S3 upload
+    // Convert structured text to Buffer for S3 upload
     const fileBuffer = Buffer.from(structured_text, "utf-8");
 
-    // Define S3 key
-    const fileKey = `processed-text/${professorId}/${Date.now()}-structured_response.txt`;
+    // Define S3 key using provided filename
+    const fileKey = `processed-text/${professorId}/${filename}`;
 
-    // Upload to S3
+    // Upload structured text to S3
     const uploadParams = {
       Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME!,
       Key: fileKey,
@@ -54,11 +61,24 @@ export async function POST(req: NextRequest) {
 
     await s3.send(new PutObjectCommand(uploadParams));
 
-    // Return the S3 file URL
-    return NextResponse.json({
-      success: true,
-      fileUrl: `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${fileKey}`,
-    });
+    // Construct file URL
+    const fileUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${fileKey}`;
+
+    // Update database based on type (Submission or AnswerKey)
+    if (type === "submission") {
+      await prisma.submission.update({
+        where: { id },
+        data: { structuredText: fileUrl }, // Now Prisma recognizes this field
+      });
+    } else if (type === "answerKey") {
+      await prisma.answerKey.update({
+        where: { id },
+        data: { structuredText: fileUrl },
+      });
+    }
+    
+
+    return NextResponse.json({ success: true, fileUrl });
 
   } catch (error) {
     console.error("Error processing PDF:", error);
