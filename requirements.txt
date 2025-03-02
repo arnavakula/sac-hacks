@@ -16,3 +16,4 @@ tiktoken
 fitz
 frontend
 langchain_openai
+flask

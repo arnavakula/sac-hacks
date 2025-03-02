@@ -1,0 +1,62 @@
+### Question 1: Expand the following notation (20 points)
+Expand the following notation:
+a) ΣΞ (2y)(i) - 1)
+b) (n+y)!/(n+y-2)!
+
+Solution:
+Assuming y = 4
+a) ((2y)(1) − 1) + ((2y) (2) − 1) + ((2y) (3) − 1) = ((2 * 4)(1) − 1) + ((2 * 4) (2) − 1) + ((2 * 4)(3) − 1) = 24 - 3
+b) (n+4)!/(n+2)! = (n+4)(n+3)(n+2)!/(n+2)! = (n+4)(n+3)
+
+### Question 2: Determine if the following statements are propositions (30 points)
+Determine if the following statements are propositions if yes, determine the truth value, if no explain why
+a) (2+7=9) → (1 + 1 = 3)
+b) There exist a number y that is less than x, where (x, y) = R
+c) x + 3 = 1 is a proposition
+d) √2 is a rational number
+e) x + 3 = 2 is solvable if x is in the domain of real numbers
+f) 2+3 = 2 if and only if 1+1 = 3
+
+Solution:
+a) Yes, False
+b) Yes, True
+c) Yes, False
+d) Yes, False
+e) Yes, True
+f) Yes, True
+
+### Question 3: Show that this is a tautology, using a truth table (15 points)
+Let a, b, and c be three propositions. Show that this is a tautology, using a truth table. Decide if it is satisfiable- explain your answer.
+
+Solution:
+The truth table shows that the expression is a tautology. Yes, it is satisfiable because we were able to prove that the expression is a tautology.
+
+### Question 4: Restate the propositions in English (15 points)
+p = "I love cats and dogs"
+q = "I love all animals"
+
+Solution:
+1. If I don't love cats or I don't love dogs, then I don't love all animals.
+2. I love all animals if and only if I don't love cats or I don't love dogs.
+3. I love cats and dogs, and I don't love all animals
+
+### Question 5: Determine what A and B are (10 points)
+A says "We are both the same"
+B says "A is a knight."
+
+Solution:
+From the table, we can say that both A and B are knights.
+
+### Question 6: Prove the following (40 points)
+a) Proven Є N, 4 + n = 13
+b) Prove (Vn Є N4 + n = 8)
+c) Prove that if n is a positive integer, then n is even if and only if 5n + 8 is even
+d) Let n be a natural number and let a1, a2, a3, ..., an be a set of n real numbers. Prove that at least one of these numbers is more than, or equal to the average of these numbers.
+e) Let n be an integer. Show that if n² + 1 is even, then n is odd, using: a proof by contradiction.
+
+Solution:
+a) If n = 9, then 4+9 = 13. Since 9 is in the set of N, then In Є N, 4 + n = 13
+b) The statement ¬(Vn Є N4+ n = 8) is true.
+c) If n is even, then 5n+ 8 is even. If 5n+8 is even, then n is even. 
+d) There exists at least one number in the set {a1, a2, ..., an} that is greater than or equal to the average of these numbers.
+e) If n² + 1 is even, then n is odd. This is proven by contradiction.

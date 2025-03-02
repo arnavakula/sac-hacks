@@ -1,0 +1,70 @@
+### Question 1: Expand the Notation (20 points)
+
+* Use your y from previous page. What is it your y? 10
+* Expand the following notation:
+
+a) ((2y)(i) − 1) =
+b) (n+1)x(n+2)x.....(n+y) =
+
+Solution:
+* For y = 10
+* a) ΣΞ - 20×100 = 2000. Assuming 9 = 100 (2010) (100) | 2XIDX (3)-1), 2x10x (2)-1) -2x10x (1)-1)] = 59,39,19..... 1999
+* b) (n+y)!/(n+y-2)! = (n+10)/(n+10-2)b (n+8)b = (n+10)(n+8) = (nt) (n+)(MHD) = (n+10)(n+a) (nt) to (nt) cancels
+
+### Question 2: Determine Propositions and Truth Value (30 points)
+
+* Determine if the following statements are propositions, if yes, determine the truth value, if no, explain why:
+
+a) (2 + 7 = 9) → (1 + 1 = 3)
+b) There exists a number y that is less than x, where (r, y) = R.
+c) X+3=1 is a proposition.
+d) √2 is a rational number.
+e) X+3=2 is solvable if x is in the domain of real numbers.
+f) 2+3=2 if and only if 1+1=3.
+
+Solution:
+* a) Proposition, False
+* b) Proposition, True
+* c) Not a proposition, both. When 2 is substituted is one, otherwise it's false it's not a proposition.
+* d) Proposition, False
+* e) Proposition, true
+* f) Proposition, false
+
+### Question 3: Show the Tautology (15 points)
+
+* Let a, b, and c be three propositions. Show that this is a tautology, using a truth table. Decide if it is satisfiable- explain your answer.
+
+Solution:
+* The last column is all True. So, it's a tautology. It is satisfiable.
+
+### Question 4: Restate Propositions in English (15 points)
+
+* p= "I love cats and dogs"
+* g= "I love all animals."
+
+a.) (p)(a)
+b.) (-) #9
+c.)p ^ (q)!
+
+Solution:
+* a) If I don't love cats and dogs, then I don't love all animals.
+* b) If and only if I love cats and dogs, I love all animals.
+* c) I love cats and dogs and I don't love all animals.
+
+### Question 5: Puzzle (10 points)
+
+* This exercise relates to the inhabitants of the island of knights and knaves created by Smullyan, where knights always tell the truth and knaves always lie. You encounter two people, A and B. Determine, if possible, what A and B are if they address you in the way described. If you cannot determine what these two people are, can you draw any conclusions?
+
+Solution:
+* A is a knight and B is a knight.
+
+### Question 6: Proofs (40 points)
+
+* Prove En EN 4+2 = 13
+* Prove ¬(Vn Є N 4+2 = 8)
+* Prove that if n is a positive integer, then n is even if and only if 5n + 8 is even
+
+Solution:
+* a) 4+6=10 is true, 4+6 is not equivalent to 13. Thus, the original statement is wrong.
+* b) 4+2=6 is true, 4+2 is not equivalent to 8. Thus, the original statement is wrong.
+* c) If n is even, then 5n+8 is even. If 5n+8 is odd, then n is odd. If n is odd, then 5n+8 is odd. Thus, the original statement is true.

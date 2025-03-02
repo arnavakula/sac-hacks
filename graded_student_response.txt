@@ -1,0 +1,159 @@
+# GRADED EXAM
+
+## Question 1: Expand the following notation (20 points)
+
+### Student Answer
+* Use your y from previous page. What is it your y? 10
+* Expand the following notation:
+
+a) ((2y)(i) − 1) =
+b) (n+1)x(n+2)x.....(n+y) =
+
+Solution:
+* For y = 10
+* a) ΣΞ - 20×100 = 2000. Assuming 9 = 100 (2010) (100) | 2XIDX (3)-1), 2x10x (2)-1) -2x10x (1)-1)] = 59,39,19..... 1999
+* b) (n+y)!/(n+y-2)! = (n+10)/(n+10-2)b (n+8)b = (n+10)(n+8) = (nt) (n+)(MHD) = (n+10)(n+a) (nt) to (nt) cancels
+
+### Professor Solution
+Assuming y = 4
+a) ((2y)(1) − 1) + ((2y) (2) − 1) + ((2y) (3) − 1) = ((2 * 4)(1) − 1) + ((2 * 4) (2) − 1) + ((2 * 4)(3) − 1) = 24 - 3
+b) (n+4)!/(n+2)! = (n+4)(n+3)(n+2)!/(n+2)! = (n+4)(n+3)
+
+### Score: 5/20
+
+### Feedback
+The student's answer shows significant confusion and errors in both parts of the question. The approach to part (a) with unclear operations and irrelevant calculations lacks the correct method of substituting y=10 into the formula and simplifying appropriately as in the professor's solution. The student's response for part (b) includes several confusions and irrelevant symbols which indicates a misunderstanding of how to simplify factorials into algebraic expressions properly. The student needs significant improvement in understanding and applying series and factorial simplifications.
+
+
+--------------------------------------------------
+
+## Question 2: Determine if the following statements are propositions (30 points)
+
+### Student Answer
+* Determine if the following statements are propositions, if yes, determine the truth value, if no, explain why:
+
+a) (2 + 7 = 9) → (1 + 1 = 3)
+b) There exists a number y that is less than x, where (r, y) = R.
+c) X+3=1 is a proposition.
+d) √2 is a rational number.
+e) X+3=2 is solvable if x is in the domain of real numbers.
+f) 2+3=2 if and only if 1+1=3.
+
+Solution:
+* a) Proposition, False
+* b) Proposition, True
+* c) Not a proposition, both. When 2 is substituted is one, otherwise it's false it's not a proposition.
+* d) Proposition, False
+* e) Proposition, true
+* f) Proposition, false
+
+### Professor Solution
+a) Yes, False
+b) Yes, True
+c) Yes, False
+d) Yes, False
+e) Yes, True
+f) Yes, True
+
+### Score: 18/30
+
+### Feedback
+The student identified most statements correctly as propositions and had appropriate rationales, but there were significant errors, particularly in the truth values and identification of b as a proposition. Clarifications on existential statements and the general applicability of propositions would be advisable. The assessment of b as a proposition without specific propositional content and misunderstanding in c about constant replacements show gaps in the understanding of core concepts.
+
+
+--------------------------------------------------
+
+## Question 3: Show that this is a tautology, using a truth table (15 points)
+
+### Student Answer
+* Let a, b, and c be three propositions. Show that this is a tautology, using a truth table. Decide if it is satisfiable- explain your answer.
+
+Solution:
+* The last column is all True. So, it's a tautology. It is satisfiable.
+
+### Professor Solution
+The truth table shows that the expression is a tautology. Yes, it is satisfiable because we were able to prove that the expression is a tautology.
+
+### Score: 12/15
+
+### Feedback
+The student correctly identified the expression as a tautology and noted that it is satisfiable, which aligns with the professor's solution. However, the answer lacks some details, such as not explicitly presenting or describing the truth table used to reach the conclusion. Including this could have demonstrated deeper understanding and completeness in the response.
+
+
+--------------------------------------------------
+
+## Question 4: Restate the propositions in English (15 points)
+
+### Student Answer
+* p= "I love cats and dogs"
+* g= "I love all animals."
+
+a.) (p)(a)
+b.) (-) #9
+c.)p ^ (q)!
+
+Solution:
+* a) If I don't love cats and dogs, then I don't love all animals.
+* b) If and only if I love cats and dogs, I love all animals.
+* c) I love cats and dogs and I don't love all animals.
+
+### Professor Solution
+1. If I don't love cats or I don't love dogs, then I don't love all animals.
+2. I love all animals if and only if I don't love cats or I don't love dogs.
+3. I love cats and dogs, and I don't love all animals
+
+### Score: 7/15
+
+### Feedback
+The student's answer reveals a misunderstanding in the translation of logical expressions to English and vice versa. While part c closely aligns with the correct response provided by the professor, parts a and b deviate significantly from the correct meanings. Specifically, the logical connections (especially about negations and connectives) were misrepresented in the student's interpretation.
+
+
+--------------------------------------------------
+
+## Question 5: Determine what A and B are (10 points)
+
+### Student Answer
+* This exercise relates to the inhabitants of the island of knights and knaves created by Smullyan, where knights always tell the truth and knaves always lie. You encounter two people, A and B. Determine, if possible, what A and B are if they address you in the way described. If you cannot determine what these two people are, can you draw any conclusions?
+
+Solution:
+* A is a knight and B is a knight.
+
+### Professor Solution
+From the table, we can say that both A and B are knights.
+
+### Score: 9/10
+
+### Feedback
+The student provided an accurate answer that both A and B are knights, which aligns with the professor's solution. However, the answer could be improved by including rationale or the logical thought process that led to concluding that both A and B are knights based on their statements. Overall, a solid answer that clearly demonstrates understanding of the key concepts related to knights and knaves.
+
+
+--------------------------------------------------
+
+## Question 6: Prove the following (40 points)
+
+### Student Answer
+* Prove En EN 4+2 = 13
+* Prove ¬(Vn Є N 4+2 = 8)
+* Prove that if n is a positive integer, then n is even if and only if 5n + 8 is even
+
+Solution:
+* a) 4+6=10 is true, 4+6 is not equivalent to 13. Thus, the original statement is wrong.
+* b) 4+2=6 is true, 4+2 is not equivalent to 8. Thus, the original statement is wrong.
+* c) If n is even, then 5n+8 is even. If 5n+8 is odd, then n is odd. If n is odd, then 5n+8 is odd. Thus, the original statement is true.
+
+### Professor Solution
+a) If n = 9, then 4+9 = 13. Since 9 is in the set of N, then In Є N, 4 + n = 13
+b) The statement ¬(Vn Є N4+ n = 8) is true.
+c) If n is even, then 5n+ 8 is even. If 5n+8 is even, then n is even. 
+d) There exists at least one number in the set {a1, a2, ..., an} that is greater than or equal to the average of these numbers.
+e) If n² + 1 is even, then n is odd. This is proven by contradiction.
+
+### Score: 15/40
+
+### Feedback
+The student's answers exhibit some understanding of even and odd number properties but lack a proper grasp of logical proof and the specific requirements of the questions posed. Incorrect equations and misunderstandings about negation in logical statements were also noted.
+
+
+--------------------------------------------------
+
+## FINAL SCORE: 66/130 (50.77%)
