@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(uuid())
+  name     String
+  email    String  @unique
+  password String
+  role     String
+
+  createdClasses  Class[] @relation("ProfessorClasses")
+  classEnrollments UsersOnClasses[]
+  submissions Submission[]
+  answerKeys AnswerKey[]
+}
+
+model Class {
+  id          String  @id @default(uuid())
+  code        String  @unique
+  name        String
+  description String?
+  quarter     String
+  year        Int
+  createdAt   DateTime @default(now())
+
+  professor   User    @relation("ProfessorClasses", fields: [professorId], references: [id])
+  professorId String
+
+  users       UsersOnClasses[] 
+  assignments Assignment[]
+}
+
+model UsersOnClasses {
+  user       User   @relation(fields: [userId], references: [id])
+  userId     String
+  class      Class  @relation(fields: [classId], references: [id])
+  classId    String
+  assignedAt DateTime @default(now())
+
+  @@id([userId, classId])
+}
+
+model Assignment {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  dueDate     DateTime
+  createdAt   DateTime @default(now())
+
+  class       Class   @relation(fields: [classId], references: [id])
+  classId     String
+  submissions Submission[]
+
+  answerKey   AnswerKey? @relation("AssignmentAnswerKey")
+}
+
+model Submission {
+  id              String       @id @default(uuid())
+  fileUrl         String
+  submittedAt     DateTime     @default(now())
+  grade           Int?         
+  feedback        String?      
+  structuredText  String?      
+  gradingDetails  Json?        
+
+  student        User          @relation(fields: [studentId], references: [id])
+  studentId      String
+
+  assignment     Assignment    @relation(fields: [assignmentId], references: [id])
+  assignmentId   String
+}
+
+
+model AnswerKey {
+  id           String       @id @default(uuid())
+  fileUrl      String
+  submittedAt  DateTime     @default(now())
+  structuredText String?
+
+  professor   User         @relation(fields: [professorId], references: [id])
+  professorId String
+
+  assignment   Assignment   @relation("AssignmentAnswerKey", fields: [assignmentId], references: [id])
+  assignmentId String @unique
+}
+
+
