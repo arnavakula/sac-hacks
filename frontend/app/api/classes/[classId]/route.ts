@@ -23,6 +23,7 @@ export async function GET(req: Request, { params }: { params: { classId: string 
             user: true,
           },
         },
+        assignments: true,
       },
     });
 

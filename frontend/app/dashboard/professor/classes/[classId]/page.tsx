@@ -45,9 +45,8 @@ export default function ClassDetailsPage() {
 
   return (
     <DashboardLayout role="professor">
-      <div className="max-w-7xl mx-auto flex flex-col gap-6"> {/* ✅ Uses more of the page width */}
+      <div className="max-w-7xl mx-auto flex flex-col gap-6">
         
-        {/* ✅ Back Button */}
         <div className="flex items-center space-x-2">
           <Button variant="outline" onClick={() => router.push("/dashboard/professor")} className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
@@ -55,7 +54,6 @@ export default function ClassDetailsPage() {
           </Button>
         </div>
 
-        {/* Page Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight">{classData.name} ({classData.code})</h1>
           <div className="flex gap-2">
@@ -73,7 +71,7 @@ export default function ClassDetailsPage() {
               <FileUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              {/* <div className="text-2xl font-bold">{classData.assignments.length}</div> */}
+              <div className="text-2xl font-bold">{classData.assignments.length}</div>
               <p className="text-xs text-muted-foreground">Assignments created for this class</p>
             </CardContent>
           </Card>
@@ -129,7 +127,7 @@ export default function ClassDetailsPage() {
                         <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Actions</th>
                       </tr>
                     </thead>
-                    {/* <tbody>
+                    <tbody>
                       {classData.assignments.length > 0 ? (
                         classData.assignments.map((assignment) => (
                           <tr key={assignment.id} className="border-b transition-colors hover:bg-muted/50">
@@ -147,7 +145,7 @@ export default function ClassDetailsPage() {
                           <td colSpan="3" className="p-4 text-center">No assignments found.</td>
                         </tr>
                       )}
-                    </tbody> */}
+                    </tbody>
                   </table>
                 </div>
               </div>
