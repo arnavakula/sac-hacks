@@ -255,11 +255,11 @@ from flask import Flask, request, render_template_string, redirect, url_for, fla
 from openai import OpenAI
 
 app = Flask(__name__)
-app.secret_key = "/Users/krishnagupta/Desktop/sac-hacks/crypto-minutia-452500-r2-89f3fb690209.json"
+app.secret_key = "/Users/arnavakula/Code/hackathons/sac-hacks/backend/crypto-minutia-452500-r2-89f3fb690209.json"
 
-STUDENT_FILE = "/Users/krishnagupta/Desktop/sac-hacks/structured_response_que.txt"
-PROFESSOR_FILE = "/Users/krishnagupta/Desktop/sac-hacks/structured_response_answer-2.txt"
-OUTPUT_FILE = "/Users/krishnagupta/Desktop/sac-hacks/graded_student_response.txt"
+STUDENT_FILE = "https://gradeai-web-bucket.s3.us-east-1.amazonaws.com/processed-text/92228052-cad5-4873-b23b-89a0b7a06b55/submissions/e753ad47-445f-4e82-a670-30d8b177e03d-e0b98984-23ce-48a6-b062-0ad2cd3083cb-structured.txt"
+PROFESSOR_FILE = "https://gradeai-web-bucket.s3.us-east-1.amazonaws.com/processed-text/92228052-cad5-4873-b23b-89a0b7a06b55/answer-keys/e0b98984-23ce-48a6-b062-0ad2cd3083cb-structured.txt"
+OUTPUT_FILE = "test.txt"
 API_KEY ="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"
 
 def read_file(file_path):

@@ -6,8 +6,9 @@ import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { ArrowLeft, FileText, CheckCircle } from "lucide-react";
+import { ArrowLeft, FileText, CheckCircle, FileUp } from "lucide-react";
 
 export default function AssignmentDetailsPage() {
   const { assignmentId } = useParams();
@@ -18,6 +19,8 @@ export default function AssignmentDetailsPage() {
   const [assignment, setAssignment] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [gradingSubmission, setGradingSubmission] = useState(null);
+  const [answerKey, setAnswerKey] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (status !== "authenticated") return;
@@ -39,13 +42,47 @@ export default function AssignmentDetailsPage() {
     fetchAssignment();
   }, [status, assignmentId]);
 
+  const handleAnswerKeyUpload = async () => {
+    if (!answerKey) {
+      toast({ title: "Error", description: "Please select a file to upload.", variant: "destructive" });
+      return;
+    }
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("file", answerKey);
+    formData.append("assignmentId", assignmentId);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to upload.");
+
+      toast({ title: "Success", description: "Answer key uploaded successfully!" });
+      
+      // Refresh assignment data to show the updated answer key
+      const refreshResponse = await fetch(`/api/assignments/${assignmentId}`);
+      if (refreshResponse.ok) {
+        const refreshedData = await refreshResponse.json();
+        setAssignment(refreshedData);
+      }
+    } catch (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleGradeSubmission = async (submission) => {
     setGradingSubmission(submission.id);
   
     try {
       let studentStructuredTextUrl = submission.structuredText;
       let answerKeyStructuredTextUrl = assignment.answerKey?.structuredText;
-
   
       // Generate structured text for student submission if missing
       if (!studentStructuredTextUrl) {
@@ -65,8 +102,6 @@ export default function AssignmentDetailsPage() {
         const studentData = await studentResponse.json();
         studentStructuredTextUrl = studentData.fileUrl;
       }
-
-      console.log(assignment);
   
       // Generate structured text for answer key if missing
       if (!answerKeyStructuredTextUrl && assignment.answerKey?.fileUrl) {
@@ -84,11 +119,25 @@ export default function AssignmentDetailsPage() {
   
         if (!answerKeyResponse.ok) throw new Error("Failed to process answer key.");
         const answerKeyData = await answerKeyResponse.json();
-        console.log(answerKeyData);
         answerKeyStructuredTextUrl = answerKeyData.fileUrl;
       }
   
-      toast({ title: "Success", description: "Submission is being processed for grading." });
+      const gradeResponse = await fetch("/api/grade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          submissionId: submission.id,
+          studentStructuredTextUrl,
+          answerKeyStructuredTextUrl,
+        }),
+      });
+
+  
+      if (!gradeResponse.ok) throw new Error("Failed to grade submission.");
+      const temp = await gradeResponse.json();
+      console.log(temp);
+  
+      toast({ title: "Success", description: "Submission graded successfully!" });
   
       // Refresh assignment state
       setAssignment((prev) => ({
@@ -97,12 +146,14 @@ export default function AssignmentDetailsPage() {
           sub.id === submission.id ? { ...sub, structuredText: studentStructuredTextUrl } : sub
         ),
       }));
+  
     } catch (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setGradingSubmission(null);
     }
   };
+  
   
 
   if (isLoading) return <p className="text-center text-lg">Loading assignment details...</p>;
@@ -130,6 +181,43 @@ export default function AssignmentDetailsPage() {
         </CardContent>
       </Card>
 
+      {/* Answer Key Upload */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Answer Key</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            {assignment.answerKey ? (
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <span>Answer key uploaded</span>
+                <Link href={assignment.answerKey.fileUrl} target="_blank">
+                  <Button size="sm" variant="outline" className="ml-4">View</Button>
+                </Link>
+              </div>
+            ) : (
+              <p className="text-amber-600">No answer key uploaded yet. Please upload one to enable automatic grading.</p>
+            )}
+            <div className="flex gap-4 items-center mt-2">
+              <Input 
+                type="file" 
+                onChange={(e) => setAnswerKey(e.target.files?.[0] || null)} 
+                accept=".pdf,.doc,.docx"
+              />
+              <Button 
+                onClick={handleAnswerKeyUpload} 
+                disabled={isUploading}
+                className="flex items-center gap-2"
+              >
+                {isUploading ? "Uploading..." : "Upload"}
+                <FileUp className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Submissions Section */}
       <Card>
         <CardHeader>
@@ -146,7 +234,7 @@ export default function AssignmentDetailsPage() {
               </tr>
             </thead>
             <tbody>
-              {assignment.submissions.length > 0 ? (
+              {assignment.submissions && assignment.submissions.length > 0 ? (
                 assignment.submissions.map((submission) => (
                   <tr key={submission.id} className="border-b">
                     <td className="py-2 px-4">{submission.student.name} ({submission.student.email})</td>
@@ -169,7 +257,8 @@ export default function AssignmentDetailsPage() {
                         size="sm"
                         className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white"
                         onClick={() => handleGradeSubmission(submission)}
-                        disabled={gradingSubmission === submission.id}
+                        disabled={gradingSubmission === submission.id || !assignment.answerKey}
+                        title={!assignment.answerKey ? "Upload an answer key first" : ""}
                       >
                         {gradingSubmission === submission.id ? "Processing..." : "Grade"}
                         <CheckCircle className="h-4 w-4" />

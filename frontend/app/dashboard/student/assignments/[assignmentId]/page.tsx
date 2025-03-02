@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 
 export default function AssignmentDetailsPage() {
   const { assignmentId } = useParams();
@@ -77,6 +77,37 @@ export default function AssignmentDetailsPage() {
     }
   };
 
+  // Function to render grading detail item with appropriate icon
+  const renderGradingDetailItem = (detail, index) => {
+    let icon = <AlertCircle className="h-4 w-4 text-gray-500" />;
+    let textColor = "text-gray-700";
+    
+    if (detail.toLowerCase().includes("correct")) {
+      icon = <CheckCircle className="h-4 w-4 text-green-500" />;
+      textColor = "text-green-700";
+    } else if (
+      detail.toLowerCase().includes("incorrect") || 
+      detail.toLowerCase().includes("wrong") || 
+      detail.toLowerCase().includes("missing")
+    ) {
+      icon = <XCircle className="h-4 w-4 text-red-500" />;
+      textColor = "text-red-700";
+    } else if (
+      detail.toLowerCase().includes("partial") || 
+      detail.toLowerCase().includes("incomplete")
+    ) {
+      icon = <AlertCircle className="h-4 w-4 text-amber-500" />;
+      textColor = "text-amber-700";
+    }
+    
+    return (
+      <li key={index} className={`flex items-start gap-2 py-1.5 ${index > 0 ? "border-t border-gray-100" : ""}`}>
+        <span className="mt-0.5 flex-shrink-0">{icon}</span>
+        <span className={textColor}>{detail}</span>
+      </li>
+    );
+  };
+
   if (isLoading) return <p className="text-center text-lg">Loading assignment details...</p>;
   if (!assignment) return <p className="text-center text-lg text-red-500">Assignment not found.</p>;
 
@@ -113,25 +144,48 @@ export default function AssignmentDetailsPage() {
         </CardHeader>
         <CardContent>
           {submission ? (
-            <div className="p-4 bg-green-50 border border-green-300 text-green-800 rounded-md space-y-2">
-              <p>
-                <strong>Submitted:</strong> {new Date(submission.submittedAt).toLocaleDateString()}{" "}
-                at {new Date(submission.submittedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-              </p>
-              <p>
-                <strong>Grade:</strong> {submission.grade !== null ? submission.grade : "Not graded yet"}
-              </p>
-              <p>
-                <strong>Feedback:</strong> {submission.feedback || "No feedback yet"}
-              </p>
-              <p className="mt-2">
-                <Link href={submission.fileUrl} target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    View Submission
-                  </Button>
-                </Link>
-              </p>
+            <div className="space-y-4">
+              <div className="p-4 bg-green-50 border border-green-300 text-green-800 rounded-md space-y-2">
+                <p>
+                  <strong>Submitted:</strong> {new Date(submission.submittedAt).toLocaleDateString()}{" "}
+                  at {new Date(submission.submittedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </p>
+                <p>
+                  <strong>Grade:</strong>{" "}
+                  {submission.grade !== null ? (
+                    <span className="font-semibold">{submission.grade}%</span>
+                  ) : (
+                    "Not graded yet"
+                  )}
+                </p>
+                {submission.feedback && (
+                  <p>
+                    <strong>Feedback:</strong> {submission.feedback}
+                  </p>
+                )}
+                <p className="mt-2">
+                  <Link href={submission.fileUrl} target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      View Submission
+                    </Button>
+                  </Link>
+                </p>
+              </div>
+
+              {/* Grading Details Section */}
+              {submission.grade !== null && submission.gradingDetails && submission.gradingDetails.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-lg font-medium mb-2">Grading Details</h3>
+                  <div className="bg-white border rounded-md shadow-sm">
+                    <ul className="p-3">
+                      {submission.gradingDetails.map((detail, index) => 
+                        renderGradingDetailItem(detail, index)
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="mt-2">

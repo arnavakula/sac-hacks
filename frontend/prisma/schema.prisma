@@ -61,19 +61,21 @@ model Assignment {
 }
 
 model Submission {
-  id           String       @id @default(uuid())
-  fileUrl      String
-  submittedAt  DateTime     @default(now())
-  grade        Int?
-  feedback     String?
-  structuredText String?
+  id              String       @id @default(uuid())
+  fileUrl         String
+  submittedAt     DateTime     @default(now())
+  grade           Int?         
+  feedback        String?      
+  structuredText  String?      
+  gradingDetails  Json?        
 
-  student      User         @relation(fields: [studentId], references: [id])
-  studentId    String
+  student        User          @relation(fields: [studentId], references: [id])
+  studentId      String
 
-  assignment   Assignment   @relation(fields: [assignmentId], references: [id])
-  assignmentId String
+  assignment     Assignment    @relation(fields: [assignmentId], references: [id])
+  assignmentId   String
 }
+
 
 model AnswerKey {
   id           String       @id @default(uuid())
