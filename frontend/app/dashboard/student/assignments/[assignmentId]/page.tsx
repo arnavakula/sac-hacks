@@ -47,29 +47,35 @@ export default function AssignmentDetailsPage() {
       toast({ title: "Error", description: "Please select a file to submit.", variant: "destructive" });
       return;
     }
-
+  
     setIsSubmitting(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("assignmentId", assignmentId);
-
+  
     try {
-      const response = await fetch("/api/submissions/create", {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("assignmentId", assignmentId);
+  
+      const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Failed to submit.");
-
-      setSubmission(data);
-      toast({ title: "Success", description: "Submission uploaded successfully!" });
+  
+      if (!response.ok) {
+        throw new Error("Upload and submission failed.");
+      }
+  
+      const { submission } = await response.json();
+      setSubmission(submission);
+  
+      toast({ title: "Success", description: "Assignment submitted successfully!" });
+  
     } catch (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   if (isLoading) return <p className="text-center text-lg">Loading assignment details...</p>;
   if (!assignment) return <p className="text-center text-lg text-red-500">Assignment not found.</p>;

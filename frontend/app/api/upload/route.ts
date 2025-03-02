@@ -1,46 +1,62 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { PrismaClient } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
-const s3 = new S3Client({ 
+const s3 = new S3Client({
   region: process.env.NEXT_PUBLIC_AWS_REGION,
   credentials: {
     accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY!
-  }
-
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY!,
+  },
 });
 
-async function uploadFiletoS3(file: Buffer, fileName: String) {
-  const fileBuffer = file;
-  console.log(fileName);
+const prisma = new PrismaClient();
 
-  const params = {
-    Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME!,
-    Key: `${fileName}-${Date.now()}`,
-    Body: fileBuffer,
-    ContentType: "application/pdf"
-  }
+export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
 
-  const command = new PutObjectCommand(params);
-  await s3.send(command);
-}
+  // if (!session || session.user.role !== "student") {
+  //   return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
+  // }
 
-export async function POST (req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;
+    const assignmentId = formData.get("assignmentId") as string;
 
-    if (!file) {
-      return new Response(JSON.stringify({ message: "File is required" }), { status: 400 });
+    if (!file || !assignmentId) {
+      return new Response(JSON.stringify({ message: "File and assignment ID are required" }), { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const fileName = await uploadFiletoS3(buffer, file.name);
+    // Generate unique file key
+    const fileKey = `submissions/${session.user.id}/${Date.now()}-${file.name}`;
 
-  
-    return new Response(JSON.stringify({ success: true, message: "hi" }), { status: 200 });
+    // Convert file to buffer
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+
+    // Upload to S3
+    const uploadParams = {
+      Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME!,
+      Key: fileKey,
+      Body: fileBuffer,
+      ContentType: file.type,
+    };
+
+    await s3.send(new PutObjectCommand(uploadParams));
+
+    // Create submission in database
+    const submission = await prisma.submission.create({
+      data: {
+        fileUrl: `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${fileKey}`,
+        studentId: session.user.id,
+        assignmentId,
+      },
+    });
+
+    return new Response(JSON.stringify({ success: true, submission }), { status: 201 });
   } catch (error) {
-    return new Response(JSON.stringify({ error }), { status: 400 });
+    console.error("Upload error:", error);
+    return new Response(JSON.stringify({ message: "Upload failed", error }), { status: 500 });
   }
-  
 }
