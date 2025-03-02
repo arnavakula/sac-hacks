@@ -16,9 +16,9 @@ const prisma = new PrismaClient();
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
 
-  // if (!session || session.user.role !== "student") {
-  //   return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
-  // }
+  if (!session) {
+    return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
+  }
 
   try {
     const formData = await req.formData();
@@ -29,32 +29,77 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ message: "File and assignment ID are required" }), { status: 400 });
     }
 
-    // Generate unique file key
-    const fileKey = `submissions/${session.user.id}/${Date.now()}-${file.name}`;
+    let fileKey = "";
+    let fileUrl = "";
+    let responseData = {};
 
     // Convert file to buffer
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-    // Upload to S3
-    const uploadParams = {
-      Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME!,
-      Key: fileKey,
-      Body: fileBuffer,
-      ContentType: file.type,
-    };
+    if (session.user.role === "student") {
+      // Student Uploads Assignment Submission
+      fileKey = `submissions/${session.user.id}/${Date.now()}-${file.name}`;
+      
+      // Upload to S3
+      const uploadParams = {
+        Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME!,
+        Key: fileKey,
+        Body: fileBuffer,
+        ContentType: file.type,
+      };
 
-    await s3.send(new PutObjectCommand(uploadParams));
+      await s3.send(new PutObjectCommand(uploadParams));
 
-    // Create submission in database
-    const submission = await prisma.submission.create({
-      data: {
-        fileUrl: `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${fileKey}`,
-        studentId: session.user.id,
-        assignmentId,
-      },
-    });
+      fileUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${fileKey}`;
 
-    return new Response(JSON.stringify({ success: true, submission }), { status: 201 });
+      // Create Submission in Database
+      const submission = await prisma.submission.create({
+        data: {
+          fileUrl,
+          studentId: session.user.id,
+          assignmentId,
+        },
+      });
+
+      responseData = { success: true, submission };
+    } else if (session.user.role === "professor") {
+      // Professor Uploads Answer Key
+      fileKey = `answer-keys/${session.user.id}/${Date.now()}-${file.name}`;
+
+      // Upload to S3
+      const uploadParams = {
+        Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME!,
+        Key: fileKey,
+        Body: fileBuffer,
+        ContentType: file.type,
+      };
+
+      await s3.send(new PutObjectCommand(uploadParams));
+
+      fileUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${fileKey}`;
+
+      
+      try {
+        const answerKey = await prisma.answerKey.create({
+          data: {
+            fileUrl,
+            professorId: session.user.id,
+            assignmentId,
+          },
+        });
+
+        return new Response(JSON.stringify({ success: true, answerKey }), { status: 201 })
+      } catch (error) {
+        console.error("Error creating answer key:", error);
+      }
+      
+      
+    } else {
+      return new Response(JSON.stringify({ message: "Invalid role" }), { status: 403 });
+    }
+
+    return new Response(JSON.stringify(responseData), { status: 201 });
+
   } catch (error) {
     console.error("Upload error:", error);
     return new Response(JSON.stringify({ message: "Upload failed", error }), { status: 500 });

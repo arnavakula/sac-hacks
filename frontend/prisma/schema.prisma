@@ -12,11 +12,12 @@ model User {
   name     String
   email    String  @unique
   password String
-  role     String  // "student" or "professor"
+  role     String
 
-  createdClasses Class[] @relation("ProfessorClasses")
+  createdClasses  Class[] @relation("ProfessorClasses")
   classEnrollments UsersOnClasses[]
   submissions Submission[]
+  answerKeys AnswerKey[]
 }
 
 model Class {
@@ -31,15 +32,15 @@ model Class {
   professor   User    @relation("ProfessorClasses", fields: [professorId], references: [id])
   professorId String
 
-  users        UsersOnClasses[] 
-  assignments  Assignment[]
+  users       UsersOnClasses[] 
+  assignments Assignment[]
 }
 
 model UsersOnClasses {
-  user    User   @relation(fields: [userId], references: [id])
-  userId  String
-  class   Class  @relation(fields: [classId], references: [id])
-  classId String
+  user       User   @relation(fields: [userId], references: [id])
+  userId     String
+  class      Class  @relation(fields: [classId], references: [id])
+  classId    String
   assignedAt DateTime @default(now())
 
   @@id([userId, classId])
@@ -55,6 +56,8 @@ model Assignment {
   class       Class   @relation(fields: [classId], references: [id])
   classId     String
   submissions Submission[]
+
+  answerKey   AnswerKey? @relation("AssignmentAnswerKey")
 }
 
 model Submission {
@@ -70,3 +73,17 @@ model Submission {
   assignment   Assignment   @relation(fields: [assignmentId], references: [id])
   assignmentId String
 }
+
+model AnswerKey {
+  id           String       @id @default(uuid())
+  fileUrl      String
+  submittedAt  DateTime     @default(now())
+
+  professor   User         @relation(fields: [professorId], references: [id])
+  professorId String
+
+  assignment   Assignment   @relation("AssignmentAnswerKey", fields: [assignmentId], references: [id])
+  assignmentId String @unique
+}
+
+
