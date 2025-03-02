@@ -12,24 +12,27 @@ export async function GET(req: Request, { params }: { params: { classId: string 
   }
 
   try {
-    const studentClass = await prisma.class.findFirst({
-      where: {
-        id: params.classId,
-        users: { some: { userId: session.user.id } }, // ✅ Ensure student is enrolled
-      },
+    const classData = await prisma.class.findUnique({
+      where: { id: params.classId },
       include: {
-        professor: true, // ✅ Fetch professor details
-        assignments: true, // ✅ Fetch assignments in the class
+        assignments: {
+          include: {
+            submissions: {
+              where: { studentId: session.user.id },
+              select: { id: true }, // Only check if a submission exists
+            },
+          },
+        },
       },
     });
 
-    if (!studentClass) {
-      return new Response(JSON.stringify({ message: "Class not found or access denied." }), { status: 404 });
+    if (!classData) {
+      return new Response(JSON.stringify({ message: "Class not found." }), { status: 404 });
     }
 
-    return new Response(JSON.stringify(studentClass), { status: 200 });
+    return new Response(JSON.stringify(classData), { status: 200 });
   } catch (error) {
-    console.error("Error fetching student class:", error);
+    console.error("Error fetching class details:", error);
     return new Response(JSON.stringify({ message: "Error retrieving class details." }), { status: 500 });
   }
 }

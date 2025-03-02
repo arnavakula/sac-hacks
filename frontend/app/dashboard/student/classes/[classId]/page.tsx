@@ -111,20 +111,35 @@ export default function StudentClassDetailsPage() {
                     </thead>
                     <tbody>
                       {classData.assignments.length > 0 ? (
-                        classData.assignments.map((assignment) => (
-                          <tr key={assignment.id} className="border-b transition-colors hover:bg-muted/50">
-                            <td className="p-4 align-middle">{assignment.title}</td>
-                            <td className="p-4 align-middle">{new Date(assignment.dueDate).toLocaleDateString()}</td>
-                            <td className="p-4 align-middle">
-                              <Link href={`/dashboard/student/assignments/${assignment.id}`}>
-                                <Button size="sm">View</Button>
-                              </Link>
-                            </td>
-                          </tr>
-                        ))
+                        classData.assignments.map((assignment) => {
+                          const hasSubmitted = assignment.submissions.length > 0;
+
+                          return (
+                            <tr key={assignment.id} className="border-b transition-colors hover:bg-muted/50">
+                              <td className="p-4 align-middle">{assignment.title}</td>
+                              <td className="p-4 align-middle">{new Date(assignment.dueDate).toLocaleDateString()}</td>
+                              <td className="p-4 align-middle">
+                                <span
+                                  className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                                    hasSubmitted
+                                      ? "bg-green-100 text-green-800"
+                                      : "bg-red-100 text-red-800"
+                                  }`}
+                                >
+                                  {hasSubmitted ? "Submitted" : "Not Submitted"}
+                                </span>
+                              </td>
+                              <td className="p-4 align-middle">
+                                <Link href={`/dashboard/student/assignments/${assignment.id}`}>
+                                  <Button size="sm">View</Button>
+                                </Link>
+                              </td>
+                            </tr>
+                          );
+                        })
                       ) : (
                         <tr>
-                          <td colSpan="3" className="p-4 text-center">No assignments found.</td>
+                          <td colSpan="4" className="p-4 text-center">No assignments found.</td>
                         </tr>
                       )}
                     </tbody>
