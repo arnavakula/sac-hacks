@@ -1,108 +1,14 @@
-# from google.oauth2 import service_account
-# from google.cloud import documentai_v1 as documentai
-
-# # Set your project, location, and processor details
-# project_id = 'crypto-minutia-452500-r2'
-# location = 'us'
-# processor_id = 'e693151434e73e85'
-# file_path = '/Users/krishnagupta/Desktop/sac-hacks/Unknown.png'
-
-# # Construct the full resource name
-# name = f'projects/{project_id}/locations/{location}/processors/{processor_id}'
-
-# # Specify the path to your service account key file
-# service_account_path = "/Users/krishnagupta/Desktop/sac-hacks/crypto-minutia-452500-r2-89f3fb690209.json"
-# credentials = service_account.Credentials.from_service_account_file(service_account_path)
-
-# # Create a Document AI client with credentials
-# client = documentai.DocumentProcessorServiceClient(credentials=credentials)
-
-# # Read the file content
-# with open(file_path, 'rb') as image_file:
-#     image_content = image_file.read()
-
-# # Configure the process request with entity_extraction_params
-# request = documentai.ProcessRequest(
-#     name=name,
-#     raw_document=documentai.RawDocument(
-#         content=image_content,
-#         mime_type='image/png'
-#     )
-# )
-
-# # Process the document
-# result = client.process_document(request=request)
-
-# # Print the OCR text
-# document = result.document
-# print("OCR Text:")
-# print(document.text)
-
-
-# from google.oauth2 import service_account
-# from google.cloud import documentai_v1beta3 as documentai
-
-# # Set your project, location, and processor details
-# project_id = 'crypto-minutia-452500-r2'
-# location = 'us'
-# processor_id = 'e693151434e73e85'
-# file_path = '/Users/krishnagupta/Desktop/sac-hacks/Unknown.png'
-
-# # Construct the full resource name for the processor
-# name = f'projects/{project_id}/locations/{location}/processors/{processor_id}'
-
-# # Specify the path to your service account key file
-# service_account_path = "/Users/krishnagupta/Desktop/sac-hacks/crypto-minutia-452500-r2-89f3fb690209.json"
-# credentials = service_account.Credentials.from_service_account_file(service_account_path)
-
-# # Create a Document AI client using the beta API
-# client = documentai.DocumentProcessorServiceClient(credentials=credentials)
-
-# # Read the file content
-# with open(file_path, 'rb') as image_file:
-#     image_content = image_file.read()
-
-# # Configure the process request with entity extraction parameters
-# request = documentai.ProcessRequest(
-#     name=name,
-#     raw_document=documentai.RawDocument(
-#         content=image_content,
-#         mime_type='image/png'
-#     ),
-#     process_options=documentai.ProcessOptions(
-#         # Specify the entity extraction parameters.
-#         entity_extraction_params=documentai.EntityExtractionParams(
-#             entity_types=["invoice_date"]  # Replace with the appropriate entity types for your processor.
-#         )
-#     )
-# )
-
-# # Process the document
-# result = client.process_document(request=request)
-
-# # Print the OCR text (and any extracted entities if available)
-# document = result.document
-# print("OCR Text:")
-# print(document.text)
-
-# # If you want to inspect the entities extracted:
-# if document.entities:
-#     print("\nExtracted Entities:")
-#     for entity in document.entities:
-#         print(f"Type: {entity.type_}, Value: {entity.mention_text}")
-
-
-
 from google.api_core.client_options import ClientOptions
 from google.cloud import documentai  # type: ignore
-
+from openai import OpenAI
+from google.api_core.client_options import ClientOptions
 # Set your project, location, and file details.
 project_id = 'crypto-minutia-452500-r2'
 location = 'us'
 processor_id = 'e693151434e73e85'
-file_path = '/Users/krishnagupta/Desktop/sac-hacks/WhatsApp Image 2025-03-01 at 18.04.01.jpeg'
+file_path = '/Users/krishnagupta/Desktop/sac-hacks/ECS 20 midterm liza.pdf'
 
-def quickstart(project_id: str, location: str, file_path: str, processor_display_name: str = "My Processor5"):
+def quickstart(project_id: str, location: str, file_path: str, processor_display_name: str = "My Processor29"):
     # You must set the `api_endpoint` if you use a location other than "us".
     opts = ClientOptions(api_endpoint=f"{location}-documentai.googleapis.com")
 
@@ -116,7 +22,7 @@ def quickstart(project_id: str, location: str, file_path: str, processor_display
     processor = client.create_processor(
         parent=parent,
         processor=documentai.Processor(
-            type_="OCR_PROCESSOR",  # Refer to the documentation for available processor types.
+            type_="OCR_PROCESSOR",
             display_name=processor_display_name
           
         ),
@@ -132,7 +38,7 @@ def quickstart(project_id: str, location: str, file_path: str, processor_display
     # Load binary data with the correct MIME type for a PNG image.
     raw_document = documentai.RawDocument(
         content=image_content,
-        mime_type="image/jpeg",  # Use "image/png" for PNG files.
+        mime_type="application/pdf",  # Use "image/png" for PNG files.
     )
 
     # Configure the process request.
@@ -144,7 +50,45 @@ def quickstart(project_id: str, location: str, file_path: str, processor_display
     # Print the OCR text.
     document = result.document
     print("The document contains the following text:")
-    print(document.text)
+    ocr_text = document.text
+    print("OCR Output:")
+    print(ocr_text)
+  
+
+    # Now, use the extracted OCR text as input for OpenAI API.
+    system_prompt = (
+        "You are a highly precise assistant tasked with transforming unstructured OCR text into a fully structured, detailed summary. Your output must include every detail found in the input, without omitting or losing any information—even if it appears messy or redundant. Organize the content under clear, descriptive headings that mirror the sections of the original text (for example, 'Student Details', 'Analysis Problem 1', etc.). Use bullet points and subheadings where applicable to enhance clarity. If there are any obvious OCR errors or formatting issues, correct them for clarity without altering or inventing new content. Do not add any information beyond what is provided in the OCR text. Ensure that all numerical data, equations, and instructions are preserved exactly as in the original input."
+    )
+    user_prompt = f"Extracted Text:\n\n{ocr_text}\n\n"
+    "Please provide a structured summary of the above text. Ensure you capture every detail exactly as presented, reformatting it with clear headings and bullet points. "
+    "Do not omit any content, and only correct minor OCR errors for readability without introducing any new information."
+
+
+    # Prepare the messages for the ChatCompletion endpoint.
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ]
+    openai_client = OpenAI(api_key="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")
+
+    # Call the OpenAI ChatCompletion API.
+    response = openai_client.chat.completions.create(
+        model="gpt-4",  # or use "gpt-3.5-turbo"
+        messages=messages,
+        temperature=0.7  # adjust as needed
+    )
+
+    # Extract and print the structured response.
+    structured_response = response.choices[0].message.content
+    print("\nStructured Response from OpenAI:")
+    print(structured_response)
+    
+
+    # Save the structured response to a text file.
+    output_file = "structured_response1.txt"
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(structured_response)
+    print(f"\nStructured response saved to {output_file}")
 
 # Call the quickstart function.
 if __name__ == "__main__":

@@ -1,0 +1,93 @@
+## ECS 020 Midterm1 Solution 
+
+### Question 1: Notation Expansion (20 points)
+Expand the following notation:
+- a) ΣΞ (2y)(i) - 1)
+- b) (n+y)!/(n+y-2)!
+
+Solution with the assumption y=4:
+- a) ((2y)(1) − 1) + ((2y) (2) − 1) + ((2y) (3) − 1) = ((2 * 4)(1) − 1) + ((2 * 4) (2) − 1) + ((2 * 4)(3) − 1) = ((124) — 3)
+- b) (n+4)!/(n+2)! = (n+4)(n+3)(n+2)!/(n+2)! = (n+4)(n+3)
+
+### Question 2: Propositions and Truth Value Determination (30 points)
+Determine if the following statements are propositions. If yes, determine the truth value. If no, explain why:
+- a) (2+7=9) → (1 + 1 = 3)
+- b) There exist a number y that is less than x, where (x, y) = R
+- c) x + 3 = 1 is a proposition
+- d) √2 is a rational number
+- e) x + 3 = 2 is solvable if x is in the domain of real numbers
+- f) 2+3 = 2 is and only if 1+1 = 3
+
+Solution:
+| Question | Proposition | Truth Value | Explanation |
+|---|---|---|---|
+| a | Yes | F | (2+7=9) is true and (1+1 =3) is false, from the truth table for the conditional statement, we know that the truth value would be false |
+| b | Yes | T | There exists a number y in R which is less than x in R therefore, this is declarative statement that is true |
+| c | Yes | F | "x+3=1 is a proposition" is a declarative statement that can be either true or false but not both, which in this case is true |
+| d | Yes | F | "√2 is a proposition" as it is a declarative statement which can be either true or false but not both. In this case, it is false as √2 is a irrational number |
+| e | Yes | T | Given "x+3=2 is solvable" is q and "x is in the domain of real number" is p. This is a conditional statement p → q, and the truth value of q is true, therefore no matter what the truth value of p is, from the truth table of the conditional statement, we know that the truth value would be true |
+| f | Yes | T | 2+3 = 2 is false and 1+1 = 3 is false, from the truth table for the biconditional statement, we know that the truth value would be true |
+
+### Question 3: Tautology and Truth Table (15 points)
+Let a, b, and c be three propositions. Show that this is a tautology, using a truth table. Decide if it is satisfiable- explain your answer.
+
+Solution:
+Let A (ab) A (bv c) = 
+
+The truth table is as follows:
+| (ab) A (bv c) | → (¬a V c) |
+|---|---|
+| T | T |
+| T | T |
+| F | T |
+| F | T |
+
+Since the last column of the above truth table has all True values, the expression is a tautology. Yes, it is satisfiable because we were able to prove that the expression is a tautology.
+
+### Question 4: Propositions Restatement in English (15 points)
+Restate the propositions in English:
+- p = "I love cats and dogs"
+- q = "I love all animals"
+
+Solutions:
+1. (¬p) (¬q) - If I don't love cats or I don't love dogs, then I don't love all animals.
+2. (p) q - I love all animals if and only if I don't love cats or I don't love dogs.
+3. p^(-9) - I love cats and dogs, and I don't love all animals
+
+### Question 5: Knights and Knaves Problem (10 points)
+This exercise relates to the inhabitants of the island of knights and knaves created by Smullyan, where knights always tell the truth and knaves always lie. You encounter two people, A and B. Determine, if possible, what A and B are if they address you in the way described. If you cannot determine what these two people are, can you draw any conclusions?
+- A says "We are both the same"
+- B says "A is a knight."
+
+Solution:
+Let K represent knight and N represent knave.
+Also let,
+- P₁: A says "We are both the same"
+- P2: B says "A is a knight."
+
+The truth table is as follows:
+| A | B | P1 \ P2 |
+|---|---|---|
+| K | K | True |
+| K | N | False |
+| N | K | False |
+| N | N | False |
+
+From the table, we can say that both A and B are knights.
+
+### Question 6: Mathematical Proofs (40 points)
+a) Prove Є N, 4 + n = 13
+b) Prove (Vn Є N4 + n = 8)
+c) Prove that if n is a positive integer, then n is even if and only if 5n + 8 is even
+d) Let n be a natural number and let a1, a2, a3, ..., an be a set of n real numbers. Prove that at least one of these numbers is more than, or equal to the average of these numbers.
+e) Let n be an integer. Show that if n² + 1 is even, then n is odd, using: a proof by contradiction.
+
+Solution:
+a) If n = 9, then 4+9 = 13. Since 9 is in the set of N, then In Є N, 4 + n = 13.
+b) We want to prove that the statement ¬(Vn € N4+n = 8) is true. In other words, we want to show that there exists at least one natural number n for which 4+ n ± 8. Let n = 2, which is in N. Then, we have: 4+ n = 4+2=6. Since 6≠8, we have shown that there exists at least one natural number n for which 4 + n ≠ 8. Therefore, the statement ¬(Vn Є N4+ n = 8) is true.
+c) We have to prove two implications.
+   - If n is even, then 5n+ 8 is even.
+   - If 5n+8 is even, then n is even.
+   (Detailed steps are in the original text)
+d) We use a proof by contradiction. Suppose none of the real numbers a₁, a2, ..., an is greater than or equal to the average of these numbers, denoted by a. By definition, we have: a = (a1+a2+...+an)/n. Our hypothesis is that: a1 <a, a2 <a, ..., an <a. We sum up all these equations and get the following: a1 + a2+...+an < n*a. Replacing a in equation (3) by its value given in equation (2), we get: a1+a2+...+an < (a1+a2+...+an), which is not possible: a number cannot be strictly smaller than itself: we have reached a contradiction. Therefore, our hypothesis was wrong, and the original statement was correct.
+e) Suppose P(n) → Q(n) is false, i.e., that ¬(P(n) → Q(n)) is true, i.e., that P(n) ^ ¬Q(n) is true. This is only the case if P(n) is true and ¬Q(n) is true. If Q(n) is true, then n is even. By definition of even numbers, there exists an integer k such that n = 2k. Then, n² + 1 = (2k)² + 1 = 4k² + 1 can be written in the form of 2k' + 1, where k' is an integer; therefore, by the definition of odd, n² + 1 is odd, i.e., ¬P(n) is true. However, we have supposed that P(n) is true: we have reached a contradiction. Hence, the original statement is true.
