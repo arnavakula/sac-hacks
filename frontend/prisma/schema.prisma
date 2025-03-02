@@ -66,6 +66,7 @@ model Submission {
   submittedAt  DateTime     @default(now())
   grade        Int?
   feedback     String?
+  structuredText String?
 
   student      User         @relation(fields: [studentId], references: [id])
   studentId    String
@@ -78,6 +79,7 @@ model AnswerKey {
   id           String       @id @default(uuid())
   fileUrl      String
   submittedAt  DateTime     @default(now())
+  structuredText String?
 
   professor   User         @relation(fields: [professorId], references: [id])
   professorId String

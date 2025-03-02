@@ -5,23 +5,19 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DashboardLayout } from "@/components/dashboard-layout";
-import { FileUp, Users, CheckCircle, Clock, ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { ArrowLeft, FileText, CheckCircle } from "lucide-react";
 
 export default function AssignmentDetailsPage() {
-  const { classId, assignmentId } = useParams();
+  const { assignmentId } = useParams();
   const router = useRouter();
   const { data: session, status } = useSession();
   const { toast } = useToast();
 
   const [assignment, setAssignment] = useState(null);
-  const [submissions, setSubmissions] = useState([]);
-  const [answerKey, setAnswerKey] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
+  const [gradingSubmission, setGradingSubmission] = useState(null);
 
   useEffect(() => {
     if (status !== "authenticated") return;
@@ -32,44 +28,42 @@ export default function AssignmentDetailsPage() {
         if (!response.ok) throw new Error("Assignment not found.");
         const data = await response.json();
         setAssignment(data);
-        setSubmissions(data.submissions || []);
       } catch (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
-        router.push(`/dashboard/professor/classes/${classId}`);
+        router.push("/dashboard/professor");
       } finally {
         setIsLoading(false);
       }
     }
 
     fetchAssignment();
-  }, [status, assignmentId, classId]);
+  }, [status, assignmentId]);
 
-  const handleAnswerKeyUpload = async () => {
-    if (!answerKey) {
-      toast({ title: "Error", description: "Please select a file to upload.", variant: "destructive" });
-      return;
-    }
-
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", answerKey);
-    formData.append("assignmentId", assignmentId);
+  const handleGradeSubmission = async (submissionId: string) => {
+    setGradingSubmission(submissionId);
 
     try {
-      const response = await fetch("/api/upload", {
+      const response = await fetch("/api/process", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ submissionId }),
       });
 
-      const data = await response.json();
-      console.log(data);
-      if (!response.ok) throw new Error(data.message || "Failed to upload.");
+      if (!response.ok) throw new Error("Failed to process submission.");
 
-      toast({ title: "Success", description: "Answer key uploaded successfully!" });
+      toast({ title: "Success", description: "Submission is being processed for grading." });
+
+      // Optionally refresh assignment data after grading
+      setAssignment((prev) => ({
+        ...prev,
+        submissions: prev.submissions.map((sub) =>
+          sub.id === submissionId ? { ...sub, processing: true } : sub
+        ),
+      }));
     } catch (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
-      setIsUploading(false);
+      setGradingSubmission(null);
     }
   };
 
@@ -77,103 +71,83 @@ export default function AssignmentDetailsPage() {
   if (!assignment) return <p className="text-center text-lg text-red-500">Assignment not found.</p>;
 
   return (
-    <DashboardLayout role="professor">
-      <div className="max-w-7xl mx-auto flex flex-col gap-6">
-        {/* Back Button */}
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" onClick={() => router.push(`/dashboard/professor/classes/${classId}`)} className="flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Class
-          </Button>
-        </div>
-
-        {/* Assignment Title */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight">{assignment.title}</h1>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{submissions.length}</div>
-              <p className="text-xs text-muted-foreground">Submissions received</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Graded</CardTitle>
-              <CheckCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{submissions.filter(s => s.grade !== null).length}</div>
-              <p className="text-xs text-muted-foreground">Submissions graded</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Grading</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{submissions.filter(s => s.grade === null).length}</div>
-              <p className="text-xs text-muted-foreground">Submissions awaiting grading</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Answer Key Upload */}
-        <div className="bg-white rounded-lg shadow-md p-6 border">
-          <h2 className="text-lg font-semibold">Upload Answer Key</h2>
-          <div className="mt-4 flex gap-4 items-center">
-            <Input type="file" onChange={(e) => setAnswerKey(e.target.files?.[0] || null)} />
-            <Button onClick={handleAnswerKeyUpload} disabled={isUploading}>
-              {isUploading ? "Uploading..." : "Upload"}
-            </Button>
-          </div>
-        </div>
-
-        {/* Student Submissions */}
-        <h2 className="text-xl font-semibold mt-4">Student Submissions</h2>
-        <div className="rounded-md border">
-          <div className="relative w-full overflow-auto">
-            <table className="w-full caption-bottom text-sm">
-              <thead className="[&_tr]:border-b">
-                <tr className="border-b transition-colors hover:bg-muted/50">
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Student</th>
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Submitted</th>
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Grade</th>
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {submissions.length > 0 ? (
-                  submissions.map((submission) => (
-                    <tr key={submission.id} className="border-b transition-colors hover:bg-muted/50">
-                      <td className="p-4 align-middle">{submission.student.name}</td>
-                      <td className="p-4 align-middle">{new Date(submission.submittedAt).toLocaleDateString()}</td>
-                      <td className="p-4 align-middle">{submission.grade !== null ? submission.grade : "Not graded"}</td>
-                      <td className="p-4 align-middle">
-                        <Link href={submission.fileUrl} target="_blank">
-                          <Button size="sm">View</Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="p-4 text-center">No submissions yet.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <div className="max-w-6xl mx-auto p-6">
+      {/* Header with back button */}
+      <div className="flex items-center space-x-3 mb-4">
+        <Button variant="outline" onClick={() => router.push("/dashboard/professor")} className="flex items-center gap-2">
+          <ArrowLeft className="h-5 w-5" />
+          Back to Class
+        </Button>
+        <h1 className="text-2xl font-bold">{assignment.title}</h1>
       </div>
-    </DashboardLayout>
+
+      {/* Description */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Assignment Details</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p><strong>Description:</strong> {assignment.description || "No description provided."}</p>
+          <p><strong>Due Date:</strong> {new Date(assignment.dueDate).toLocaleDateString()}</p>
+        </CardContent>
+      </Card>
+
+      {/* Submissions Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Student Submissions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <table className="w-full text-sm border">
+            <thead>
+              <tr className="border-b bg-gray-100">
+                <th className="py-2 px-4 text-left">Student</th>
+                <th className="py-2 px-4 text-left">Submitted At</th>
+                <th className="py-2 px-4 text-left">Grade</th>
+                <th className="py-2 px-4 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {assignment.submissions.length > 0 ? (
+                assignment.submissions.map((submission) => (
+                  <tr key={submission.id} className="border-b">
+                    <td className="py-2 px-4">{submission.student.name} ({submission.student.email})</td>
+                    <td className="py-2 px-4">{new Date(submission.submittedAt).toLocaleDateString()}</td>
+                    <td className="py-2 px-4">
+                      {submission.grade !== null ? (
+                        <span className="text-green-600 font-semibold">{submission.grade}%</span>
+                      ) : (
+                        <span className="text-gray-500">Not Graded</span>
+                      )}
+                    </td>
+                    <td className="py-2 px-4 flex gap-2">
+                      <Link href={submission.fileUrl} target="_blank">
+                        <Button size="sm" variant="outline" className="flex items-center gap-1">
+                          <FileText className="h-4 w-4" />
+                          View
+                        </Button>
+                      </Link>
+                      <Button
+                        size="sm"
+                        className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={() => handleGradeSubmission(submission.id)}
+                        disabled={gradingSubmission === submission.id}
+                      >
+                        {gradingSubmission === submission.id ? "Processing..." : "Grade"}
+                        <CheckCircle className="h-4 w-4" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="py-4 text-center text-gray-500">No submissions yet.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

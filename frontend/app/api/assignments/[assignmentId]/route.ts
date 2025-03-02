@@ -12,17 +12,32 @@ export async function GET(req: Request, { params }: { params: { assignmentId: st
   }
 
   try {
-    const assignment = await prisma.assignment.findUnique({
-      where: { id: params.assignmentId },
-      include: {
-        submissions: {
-          where: { studentId: session.user.id },
-          orderBy: { submittedAt: "desc" }, // Get the latest submission
-          take: 1, // Only return one submission
+    let assignment;
+
+    if (session.user.role === "student") {
+      // Student: Fetch the assignment and their latest submission
+      assignment = await prisma.assignment.findUnique({
+        where: { id: params.assignmentId },
+        include: {
+          submissions: {
+            where: { studentId: session.user.id },
+            orderBy: { submittedAt: "desc" }, // Get the latest submission
+            take: 1, // Only return one submission
+          },
         },
-      },
-    });
-    
+      });
+    } else if (session.user.role === "professor") {
+      // Professor: Fetch the assignment and all submissions
+      assignment = await prisma.assignment.findUnique({
+        where: { id: params.assignmentId },
+        include: {
+          submissions: {
+            include: { student: true }, // Include student details in submissions
+            orderBy: { submittedAt: "desc" }, // Order submissions by latest first
+          },
+        },
+      });
+    }
 
     if (!assignment) {
       return new Response(JSON.stringify({ message: "Assignment not found." }), { status: 404 });
