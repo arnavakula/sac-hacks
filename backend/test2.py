@@ -6,6 +6,7 @@ import json
 import requests  # ✅ Used to fetch files from URLs
 from flask import Flask, request, jsonify
 from openai import OpenAI
+from security import safe_requests
 
 app = Flask(__name__)
 
@@ -15,7 +16,7 @@ app.secret_key = "/Users/arnavakula/Code/hackathons/sac-hacks/backend/crypto-min
 def fetch_file_content(url):
     """Fetch file content from a given URL."""
     try:
-        response = requests.get(url)
+        response = safe_requests.get(url)
         response.raise_for_status()  # Raise an error if request fails
         return response.text
     except requests.RequestException as e:

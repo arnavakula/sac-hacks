@@ -18,3 +18,4 @@ frontend
 langchain_openai
 flask
 google-cloud-documentai
+security==1.3.1

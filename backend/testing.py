@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify
 import os
 import uuid
-import requests
 from google.api_core.client_options import ClientOptions
 from google.cloud import documentai
 from openai import OpenAI
+from security import safe_requests
 
 app = Flask(__name__)
 
@@ -14,7 +14,7 @@ LOCATION = 'us'
 
 def process_pdf_from_url(pdf_url: str):
     # Download the PDF from the provided URL
-    response = requests.get(pdf_url)
+    response = safe_requests.get(pdf_url)
     if response.status_code != 200:
         raise ValueError("Failed to download the PDF from the provided URL.")
 
