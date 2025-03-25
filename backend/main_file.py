@@ -1,11 +1,14 @@
 
-from flask import Flask, request, jsonify, render_template_string, send_file
+from flask import Flask, request, jsonify, render_template_string
 import os
 import uuid
 from google.api_core.client_options import ClientOptions
 from google.cloud import documentai  # type: ignore
 from openai import OpenAI
 import uuid
+import flask
+from pathlib import Path
+
 app = Flask(__name__)
 
 # Configuration details for Google Cloud Document AI.
@@ -129,7 +132,7 @@ def process_endpoint():
         f.write(structured_response)
 
     # Return the text file as a download.
-    return send_file(output_filename, as_attachment=True,download_name="structured_response_que.txt")
+    return flask.send_from_directory((p := Path(output_filename)).parent, p.name, as_attachment=True,download_name="structured_response_que.txt")
 
 if __name__ == '__main__':
     app.run(debug=True,port=5008)
